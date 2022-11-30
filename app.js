@@ -1,6 +1,9 @@
+import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
 import { MongoClient } from "mongodb";
 
 const URI = process.env.MONGODB || "mongodb://localhost:27017";
+console.log(URI);
 const client = new MongoClient(URI);
 const dbname = "sample_mflix";
 const collection_name = "movies";
@@ -8,6 +11,7 @@ const moviesCollection = client.db(dbname).collection(collection_name);
 
 const autocomplete = async (title) => {
   try {
+    if (!title) return;
     const pipeline = [
       {
         $search: {
@@ -38,7 +42,7 @@ const autocomplete = async (title) => {
   }
 };
 
-// autocomplete("Harry");
+autocomplete("");
 
 const filteredMovies = async ({ term, genres, countries }) => {
   try {
@@ -131,11 +135,11 @@ const filteredMovies = async ({ term, genres, countries }) => {
     await client.close();
   }
 };
-filteredMovies({
-  term: "sea", // somehow doesn't work if term is an empty string
-  genres: ["Drama"],
-  countries: [],
-});
+// filteredMovies({
+//   term: "sea", // somehow doesn't work if term is an empty string
+//   genres: ["Drama"],
+//   countries: [],
+// });
 
 const facetsGenres = async () => {
   try {
